@@ -6,6 +6,8 @@ from typing import BinaryIO, Self
 
 from pydantic import BaseModel, ValidationError
 
+from igipy.utils import BinaryFormat
+
 
 class EmptyStreamError(ValueError):
     pass
@@ -93,7 +95,7 @@ class ThmLod(BaseModel):
         return cls(data=lod_data, number=lod_number, width=lod_width, height=height)
 
 
-class Thm(BaseModel):
+class Thm(BinaryFormat):
     header: ThmHeader
     lods: list[ThmLod]
 
