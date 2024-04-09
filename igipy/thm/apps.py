@@ -15,8 +15,10 @@ Each LOD consists of a two-dimensional array of float32 numbers.
 
 
 @thm_app.command(short_help="Represent .thm file internals as JSON")
-def convert_to_json(thm_path: Path, indent: int = 2):
-    with thm_path.open(mode="rb") as stream:
-        thm = Thm.from_stream(stream)
+def convert_to_json(source: Path, indent: int = 2):
+    print(Thm.from_file(source).to_json(indent=indent))
 
-    print(json.dumps(thm.dict(), indent=indent))
+
+@thm_app.command(short_help="Convert .thm file into TIFF")
+def convert_to_tiff(source: Path, target: Path):
+    Thm.from_file(source).to_tiff(target)

@@ -1,9 +1,11 @@
+import json
 import struct
 from array import array
 from itertools import islice
 from pathlib import Path
 from typing import BinaryIO, Self
 
+from PIL import Image
 from pydantic import BaseModel, ValidationError
 
 from igipy.utils import BinaryFormat
@@ -67,9 +69,12 @@ class ThmHeader(BaseModel):
             height=height,
         )
 
+    def to_dict(self) -> dict:
+        return self.dict()
+
 
 class ThmLod(BaseModel):
-    data: list[list[float]]
+    data: bytes
     number: int
     width: int
     height: int
@@ -87,12 +92,16 @@ class ThmLod(BaseModel):
         if len(lod_bytes) < lod_length:
             raise ValidationError("Not enough data to build a lod")
 
-        lod_array = array("f")
-        lod_array.frombytes(lod_bytes)
+        return cls(data=lod_bytes, number=lod_number, width=lod_width, height=height)
 
-        lod_data = [list(islice(iter(lod_array), width)) for _ in range(height)]
+    def to_dict(self) -> dict:
+        lod_data_array = array("f")
+        lod_data_array.frombytes(self.data)
 
-        return cls(data=lod_data, number=lod_number, width=lod_width, height=height)
+        result = self.dict()
+        result["data"] = [list(islice(iter(lod_data_array), self.width)) for _ in range(self.height)]
+
+        return result
 
 
 class Thm(BinaryFormat):
@@ -107,7 +116,6 @@ class Thm(BinaryFormat):
     @classmethod
     def from_stream(cls, stream: BinaryIO) -> Self:
         header = ThmHeader.from_stream(stream)
-
         lods = list()
 
         for lod_number in range(10):
@@ -118,3 +126,19 @@ class Thm(BinaryFormat):
                 break
 
         return cls(header=header, lods=lods)
+
+    def to_dict(self) -> dict:
+        return {
+            "header": self.header.to_dict(),
+            "lods": [lod.to_dict() for lod in self.lods]
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent)
+
+    def to_tiff(self, path: Path):
+        with path.open(mode="wb") as stream:
+            lod = self.lods[0]
+            img = Image.new(mode="F", size=(lod.width, lod.height))
+            img.frombytes(lod.data)
+            img.save(stream)
