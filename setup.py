@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='igipy',
-    version='0.1.0',
+    name="igipy",
+    version="0.1.0",
     description='Converting game assets from "Project IGI" and "Project IGI 2" games into widely recognized formats',
     packages=find_packages(),
     include_package_data=True,
-    author='Artiom Rotari',
-    author_email='ordersone@gmail.com',
+    author="Artiom Rotari",
+    author_email="ordersone@gmail.com",
     url="https://github.com/NEWME0/IGIPy",
     install_requires=[
         "typer==0.9.0",

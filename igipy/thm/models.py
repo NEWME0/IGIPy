@@ -35,7 +35,9 @@ class ThmHeader(BaseModel):
         header_bytes = stream.read(52)
 
         if len(header_bytes) < 52:
-            raise ValueError(f"Not enough bytes for headers: {len(header_bytes)}. Need 52")
+            raise ValueError(
+                f"Not enough bytes for headers: {len(header_bytes)}. Need 52"
+            )
 
         (
             unknown_0,
@@ -80,7 +82,9 @@ class ThmLod(BaseModel):
     height: int
 
     @classmethod
-    def from_stream(cls, stream: BinaryIO, width: int, height: int, lod_number: int) -> Self:
+    def from_stream(
+        cls, stream: BinaryIO, width: int, height: int, lod_number: int
+    ) -> Self:
         lod_width = width // (1 << lod_number)
         lod_height = height // (1 << lod_number)
         lod_length = lod_width * lod_height * 4
@@ -99,7 +103,9 @@ class ThmLod(BaseModel):
         lod_data_array.frombytes(self.data)
 
         result = self.dict()
-        result["data"] = [list(islice(iter(lod_data_array), self.width)) for _ in range(self.height)]
+        result["data"] = [
+            list(islice(iter(lod_data_array), self.width)) for _ in range(self.height)
+        ]
 
         return result
 
@@ -120,7 +126,9 @@ class Thm(BinaryFormat):
 
         for lod_number in range(10):
             try:
-                lod = ThmLod.from_stream(stream, header.width, header.height, lod_number)
+                lod = ThmLod.from_stream(
+                    stream, header.width, header.height, lod_number
+                )
                 lods.append(lod)
             except EmptyStreamError:
                 break
@@ -130,7 +138,7 @@ class Thm(BinaryFormat):
     def to_dict(self) -> dict:
         return {
             "header": self.header.to_dict(),
-            "lods": [lod.to_dict() for lod in self.lods]
+            "lods": [lod.to_dict() for lod in self.lods],
         }
 
     def to_json(self, indent: int = 2) -> str:

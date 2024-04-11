@@ -7,7 +7,7 @@ app = Typer(
     short_help="Convert and decompile Project IGI and Project IGI 2 fileformats",
     help="Here should be long description...",
     add_completion=False,
-    rich_markup_mode="markdown"
+    rich_markup_mode="markdown",
 )
 
 app.add_typer(thm_app)

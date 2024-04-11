@@ -2,3 +2,6 @@ site_name: IGIPy
 
 nav:
   - Home: 'index.md'
+
+theme:
+  name: readthedocs

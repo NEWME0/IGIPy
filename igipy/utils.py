@@ -23,7 +23,9 @@ class BinaryFormat(BaseModel):
             raise FileNotFoundError(f"Not found a file at: {path.as_posix()}")
 
         if not path.is_file():
-            raise FileNotFoundError(f"Found something else than file at: {path.as_posix()}")
+            raise FileNotFoundError(
+                f"Found something else than file at: {path.as_posix()}"
+            )
 
         with path.open(mode="rb") as stream:
             return cls.from_stream(stream)

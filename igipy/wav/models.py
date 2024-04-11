@@ -41,7 +41,7 @@ class WavHeader(BaseModel):
             unknown_04,
             frame_rate,
             frame_count,
-        ) = struct.unpack('4s4H2I', header_bytes)
+        ) = struct.unpack("4s4H2I", header_bytes)
 
         if signature != b"ILSF":
             raise ValidationError(f"Unexpected signature: {signature}")
